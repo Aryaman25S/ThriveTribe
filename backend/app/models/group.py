@@ -11,5 +11,7 @@ class Group(Base):
     name = Column(String)
     invite_code = Column(String, unique=True)  # Unique code for joining
     max_size = Column(Integer, default=6)  # MVP: Max 6 members
-    created_by = Column(Integer, ForeignKey("users.id"))
+    # Add a created by field to track the user who created the group,
+    # but add -1 as a default value
+    created_by = Column(Integer, default=-1)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
