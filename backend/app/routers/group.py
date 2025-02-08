@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+# app/routers/group.py
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.group import Group
 from app.models.user_group import UserGroup
+from app.schemas import GroupCreate, GroupResponse
 import shortuuid
 
 router = APIRouter()
@@ -13,42 +15,21 @@ def generate_invite_code():
     return shortuuid.ShortUUID().random(length=6).upper()
 
 
-@router.post("/groups", status_code=201)
-async def create_group(group_name: str, db: AsyncSession = get_db()):
+@router.post("/groups", status_code=201, response_model=GroupResponse)
+async def create_group(group_data: GroupCreate, db: AsyncSession = Depends(get_db)):
     new_group = Group(
-        name=group_name, invite_code=generate_invite_code(), max_size=6, created_by=1
+        name=group_data.name,
+        invite_code=generate_invite_code(),
+        max_size=6,
+        created_by=1,
     )
     db.add(new_group)
     await db.commit()
     await db.refresh(new_group)
-
-    # Add the creator to the group
-    db.add(UserGroup(user_id=1, group_id=new_group.id))
-    await db.commit()
-
-    return {"invite_code": new_group.invite_code}
+    return new_group
 
 
-@router.post("/groups/{invite_code}/join")
-async def join_group(invite: str, user_id: int, db: AsyncSession = get_db()):
-    result = await db.execute(select(Group).where(Group.invite_code == invite))
-    group = result.scalar_one_or_none()
-
-    if group is None:
-        raise HTTPException(status_code=404, detail="Invalid invite code")
-
-    members = await db.execute(select(UserGroup).where(UserGroup.group_id == group.id))
-
-    if members.rowcount >= group.max_size:
-        raise HTTPException(status_code=400, detail="Group is full")
-
-    db.add(UserGroup(user_id=user_id, group_id=group.id))
-    await db.commit()
-    return {"message": "Joined group successfully"}
-
-
-@router.get("/groups")
-async def get_groups(db: AsyncSession = get_db()):
+@router.get("/groups", response_model=list[GroupResponse])
+async def list_groups(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Group))
-    groups = result.scalars().all()
-    return groups
+    return result.scalars().all()
