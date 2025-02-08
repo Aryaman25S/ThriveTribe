@@ -6,9 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-print("Firebase Credentials:")
-print(os.getenv("FIREBASE_CREDENTIALS"))
-
 app = FastAPI(title="ThriveTribe API")
 
 app.include_router(user.router, prefix="/users", tags=["users"])
