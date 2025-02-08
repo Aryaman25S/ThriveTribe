@@ -1,6 +1,13 @@
 from fastapi import FastAPI
 from app.routers import user
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+print("Firebase Credentials:")
+print(os.getenv("FIREBASE_CREDENTIALS"))
 
 app = FastAPI(title="ThriveTribe API")
 
