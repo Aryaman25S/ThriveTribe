@@ -17,5 +17,4 @@ class Task(Base):
     description = Column(String)
     status = Column(String, default=TaskStatus.PENDING)
     assigned_to = Column(Integer, ForeignKey("users.id"))  # User ID
-    group_id = Column(Integer, ForeignKey("groups.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())

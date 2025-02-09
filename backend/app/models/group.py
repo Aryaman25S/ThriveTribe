@@ -8,7 +8,7 @@ class Group(Base):
     __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    name = Column(String, unique=True)
     invite_code = Column(String, unique=True)  # Unique code for joining
     max_size = Column(Integer, default=6)  # MVP: Max 6 members
     # Add a created by field to track the user who created the group,

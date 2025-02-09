@@ -6,7 +6,9 @@ from app.database import get_db
 from app.models.group import Group
 from app.models.user_group import UserGroup
 from app.models.user import User
-from app.schemas import GroupCreate, GroupResponse
+from app.models.task import Task, TaskStatus
+from app.schemas import GroupCreate, GroupResponse, GroupResponseDetail
+from datetime import datetime, timedelta
 import shortuuid
 
 router = APIRouter()
@@ -38,6 +40,51 @@ async def list_groups(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No groups found")
 
     return groups
+
+
+@router.get("/detail/{group_name}", response_model=GroupResponseDetail)
+async def get_group_detail(group_name: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Group).filter(Group.name == group_name))
+    group = result.scalar_one_or_none()
+    if group is None:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    members_result = await db.execute(
+        select(User)
+        .join(UserGroup, User.id == UserGroup.user_id)
+        .filter(UserGroup.group_id == group.id)
+    )
+    members = members_result.scalars().all()
+
+    now = datetime.now()
+    start_of_day = datetime(now.year, now.month, now.day, 0, 0, 0)
+    end_of_day = start_of_day + timedelta(days=1)
+
+    members_with_status = []
+    for member in members:
+        tasks_result = await db.execute(
+            select(Task)
+            .where(Task.assigned_to == member.id)
+            .where(Task.status == TaskStatus.PENDING)
+            .where(Task.created_at >= start_of_day)
+            .where(Task.created_at < end_of_day)
+        )
+        incomplete_count = len(tasks_result.scalars().all())
+        member_data = {
+            "id": member.id,
+            "user_name": member.user_name,
+            "email": member.email,
+            "streak": 0,
+            "daily_incomplete_tasks": incomplete_count,
+        }
+        members_with_status.append(member_data)
+
+    group_data = {
+        "id": group.id,
+        "name": group.name,
+        "members": members_with_status,
+    }
+    return group_data
 
 
 @router.get("/{user_name}", response_model=list[GroupResponse])
