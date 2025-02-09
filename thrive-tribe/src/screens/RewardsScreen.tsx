@@ -1,121 +1,171 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from "react-native";
-import { Card, Avatar } from "react-native-paper";
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, Animated, TouchableOpacity, ScrollView, ImageBackground } from "react-native";
+import { Card } from "react-native-paper";
 
 interface Reward {
   id: number;
-  title: string;
-  description: string;
-  isRevealed: boolean;
+  name: string;
+  pointsRequired: number;
+  revealed: boolean;
 }
 
 const RewardsScreen = () => {
-  const [totalPoints, setTotalPoints] = useState(250); // Example points
+  const [totalPoints, setTotalPoints] = useState(125);
   const [rewards, setRewards] = useState<Reward[]>([
-    { id: 1, title: "₹500 Off", description: "Flat ₹500 off on silver jewellery", isRevealed: false },
-    { id: 2, title: "4 Free Products", description: "Get 4 free products on orders above ₹598", isRevealed: false },
-    { id: 3, title: "75% Off", description: "Flat 75% off on earbuds & smartwatch", isRevealed: false },
+    { id: 1, name: "10% Discount Code", pointsRequired: 100, revealed: false },
+    { id: 2, name: "Free Coffee ☕", pointsRequired: 150, revealed: false },
+    { id: 3, name: "Fitness App Premium", pointsRequired: 200, revealed: false },
+    { id: 4, name: "Amazon Gift Card 🎁", pointsRequired: 250, revealed: false },
   ]);
 
-  // Handle reward reveal
-  const revealReward = (id: number) => {
-    setRewards(rewards.map(reward =>
-      reward.id === id ? { ...reward, isRevealed: true } : reward
-    ));
-    Alert.alert("🎉 Reward Unlocked!", "You have unlocked a new reward!");
+  const flipAnimations = useRef(rewards.map(() => new Animated.Value(0))).current;
+
+  const handleRevealReward = (index: number, id: number, pointsRequired: number) => {
+    if (totalPoints >= pointsRequired) {
+      setTotalPoints(totalPoints - pointsRequired);
+      setRewards(rewards.map((reward) => (reward.id === id ? { ...reward, revealed: true } : reward)));
+
+      Animated.timing(flipAnimations[index], {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }).start();
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.totalPoints}>🏆 {totalPoints} Total Points</Text>
+    <ImageBackground
+      source={{ uri: "https://source.unsplash.com/1600x900/?abstract,gradient" }} // Placeholder asset
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <Card style={styles.pointsCard}>
+          <Card.Content>
+            <Text style={styles.pointsLabel}>Total Points</Text>
+            <Text style={styles.pointsText}>{totalPoints} ⭐</Text>
+          </Card.Content>
+        </Card>
 
-      <ScrollView contentContainerStyle={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Your Rewards</Text>
+        <ScrollView contentContainerStyle={styles.gridContainer}>
+          {rewards.map((item, index) => {
+            const frontInterpolate = flipAnimations[index].interpolate({
+              inputRange: [0, 1],
+              outputRange: ["0deg", "180deg"],
+            });
 
-        <View style={styles.rewardsGrid}>
-          {rewards.map((reward) => (
-            <TouchableOpacity key={reward.id} onPress={() => revealReward(reward.id)} style={styles.rewardCard}>
-              {!reward.isRevealed ? (
-                <View style={styles.scratchCard}>
-                  <Text style={styles.scratchText}>🎁 Scratch to Reveal</Text>
-                </View>
-              ) : (
-                <View style={styles.revealedReward}>
-                  <Text style={styles.rewardTitle}>{reward.title}</Text>
-                  <Text style={styles.rewardDescription}>{reward.description}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
+            const backInterpolate = flipAnimations[index].interpolate({
+              inputRange: [0, 1],
+              outputRange: ["180deg", "360deg"],
+            });
+
+            const frontOpacity = flipAnimations[index].interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [1, 0, 0],
+            });
+
+            const backOpacity = flipAnimations[index].interpolate({
+              inputRange: [0, 0.5, 1],
+              outputRange: [0, 0, 1],
+            });
+
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.rewardCard]}
+                onPress={() => handleRevealReward(index, item.id, item.pointsRequired)}
+                disabled={item.revealed || totalPoints < item.pointsRequired}
+              >
+                <Animated.View style={[styles.cardFace, { transform: [{ rotateY: frontInterpolate }], opacity: frontOpacity }]}>
+                  {totalPoints >= item.pointsRequired ? (
+                    <Text style={styles.hiddenText}>Tap to Reveal</Text>
+                  ) : (
+                    <Text style={styles.lockedText}>🔒 {item.pointsRequired} Points</Text>
+                  )}
+                </Animated.View>
+
+                <Animated.View style={[styles.cardFace, styles.cardBack, { transform: [{ rotateY: backInterpolate }], opacity: backOpacity }]}>
+                  <Text style={styles.rewardText}>{item.name}</Text>
+                </Animated.View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: "cover",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#121212", // Dark theme
-    paddingTop: 50,
-    paddingHorizontal: 20,
+    padding: 20,
   },
-  totalPoints: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#FFD700",
-    textAlign: "center",
+  pointsCard: {
+    padding: 20,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+    alignItems: "center",
     marginBottom: 20,
+    elevation: 3,
   },
-  scrollView: {
-    paddingBottom: 30,
+  pointsLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#555",
   },
-  sectionTitle: {
-    fontSize: 18,
+  pointsText: {
+    fontSize: 28,
     fontWeight: "bold",
-    color: "#FFF",
-    marginBottom: 15,
+    color: "#222",
+    marginTop: 5,
   },
-  rewardsGrid: {
+  gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
   rewardCard: {
     width: "48%",
-    aspectRatio: 1, // Ensures square shape
-    backgroundColor: "#1E1E1E",
-    borderRadius: 10,
-    alignItems: "center",
+    aspectRatio: 1,
+    borderRadius: 15,
     justifyContent: "center",
+    alignItems: "center",
     marginBottom: 15,
+    elevation: 3,
+    backgroundColor: "#fff", // Plain white reward cards
   },
-  scratchCard: {
-    backgroundColor: "#FFA500",
+  cardFace: {
+    position: "absolute",
     width: "100%",
     height: "100%",
-    borderRadius: 10,
-    alignItems: "center",
     justifyContent: "center",
-  },
-  scratchText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#FFF",
-  },
-  revealedReward: {
     alignItems: "center",
-    padding: 10,
+    backfaceVisibility: "hidden",
+    borderRadius: 15,
   },
-  rewardTitle: {
+  cardBack: {
+    position: "absolute",
+    backgroundColor: "#F4C542", // Gold for revealed rewards
+  },
+  rewardText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#FFD700",
-  },
-  rewardDescription: {
-    fontSize: 12,
-    color: "#CCC",
     textAlign: "center",
+    color: "#333",
+  },
+  hiddenText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#555",
+  },
+  lockedText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#999",
   },
 });
 
