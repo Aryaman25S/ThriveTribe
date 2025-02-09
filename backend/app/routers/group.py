@@ -16,7 +16,7 @@ def generate_invite_code():
     return shortuuid.ShortUUID().random(length=6).upper()
 
 
-@router.post("/groups", status_code=201, response_model=GroupResponse)
+@router.post("/create", status_code=201, response_model=GroupResponse)
 async def create_group(group_data: GroupCreate, db: AsyncSession = Depends(get_db)):
     new_group = Group(
         name=group_data.name,
@@ -29,23 +29,35 @@ async def create_group(group_data: GroupCreate, db: AsyncSession = Depends(get_d
     return new_group
 
 
-@router.get("/groups", response_model=list[GroupResponse])
+@router.get("/list", response_model=list[GroupResponse])
 async def list_groups(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Group))
-    return result.scalars().all()
+    groups = result.scalars().all()
+
+    if not groups:
+        raise HTTPException(status_code=404, detail="No groups found")
+
+    return groups
 
 
 @router.get("/{user_name}", response_model=list[GroupResponse])
 async def get_user_groups(user_name: str, db: AsyncSession = Depends(get_db)):
-    checkusr = await db.execute(
-        select(UserGroup).filter(UserGroup.user_name == user_name)
-    )
+    checkusr = await db.execute(select(User).filter(User.user_name == user_name))
     user = checkusr.scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    result = await db.execute(select(Group).filter(Group.id == user.group_id))
-    return result.scalars().all()
+    result = await db.execute(select(UserGroup).filter(UserGroup.user_id == user.id))
+    user_groups = result.scalars().all()
+
+    # Get all groups
+    groups = []
+    for user_group in user_groups:
+        result = await db.execute(select(Group).filter(Group.id == user_group.group_id))
+        group = result.scalar_one_or_none()
+        groups.append(group)
+
+    return groups
 
 
 @router.post("/join-group/{invite_code}/{user_name}", status_code=204)

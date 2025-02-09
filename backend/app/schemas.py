@@ -39,7 +39,7 @@ class GroupResponse(GroupCreate):
     created_at: datetime
 
     class Config:
-        from_attributes = True  # Allows ORM mode for SQLAlchemy
+        from_attributes = True
 
 
 class TaskCreate(BaseModel):

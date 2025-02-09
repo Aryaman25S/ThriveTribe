@@ -43,9 +43,12 @@ def insert_users():
 def insert_groups():
     """Insert dummy groups into the database."""
     groups_data = [
-        {"name": "admin"},
-        {"name": "developer"},
-        {"name": "designer"},
+        {"name": "admin", "invite_code": "admin"},
+        {
+            "name": "developer",
+            "invite_code": "developer",
+        },
+        {"name": "designer", "invite_code": "designer"},
     ]
     with Session() as session:
         groups = [Group(**group_data) for group_data in groups_data]
