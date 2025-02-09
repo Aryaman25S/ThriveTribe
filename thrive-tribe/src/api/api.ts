@@ -42,29 +42,23 @@ export const fetchTaskList = async (userName: string) => {
 };
 
 export const fetchCurrentTask = async (userName: string) => {
-    return {
-        id: 3,
-        title: "Take a 30-minute walk in nature 🌿",
-        completed: false,
-        proof: null,
+    try {
+        const response = await api.get(`/tasks/gettoday/${userName}`);
+        return {
+            id: response.data.id,
+            title: response.data.title,
+            completed: response.data.status == "completed",
+            proof: null,
+        }
+    } catch (error) {
+        console.error("Error fetching current task:", error);
+        return [];
     }
-    // try {
-    //     const response = await api.get(`/tasks/${userName}/today`);
-    //     return {
-    //         id: 3,
-    //         title: response.data.title,
-    //         completed: response.data.status == "completed",
-    //         proof: null,
-    //     }
-    // } catch (error) {
-    //     console.error("Error fetching task list:", error);
-    //     return [];
-    // }
 };
 
-export const setTaskStatusToComplete = async (taskId: number) => {
+export const setTaskStatusToComplete = async (username: string) => {
     try {
-        await api.patch(`/tasks/complete/${taskId}`);
+        await api.patch(`/tasks/complete/${username}`);
     } catch (error) {
         console.error("error setting task status to completed:", error);
         return [];

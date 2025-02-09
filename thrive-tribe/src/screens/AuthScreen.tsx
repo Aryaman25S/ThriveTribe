@@ -30,7 +30,6 @@ const AuthScreen = () => {
   const onSubmit = async (data: LoginForm) => {
     try {
       let status = await loginUser(data.email, data.password);
-      console.log(status);
       if (status !=200){
         throw new Error();
       }

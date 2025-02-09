@@ -26,7 +26,7 @@ const TaskScreen = () => {
 
   // Handle task completion
   const completeTask = async () => {
-    await setTaskStatusToComplete(task.id);
+    await setTaskStatusToComplete('charlie');
     setTask({...task, completed: true});
 
     const completedTask = {
@@ -64,7 +64,8 @@ const TaskScreen = () => {
       const currentTask = await fetchCurrentTask('charlie');
       if (taskList) {
         setTaskHistory(taskList);
-        setTask(currentTask);
+        console.log(currentTask)
+        setTask(currentTask as Task);
       }
     };
 
