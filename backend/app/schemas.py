@@ -1,10 +1,7 @@
 # app/schemas.py
 from pydantic import BaseModel
 from datetime import datetime
-<<<<<<< HEAD
-=======
 from app.models.task import TaskStatus
->>>>>>> backend
 
 
 class UserBase(BaseModel):
