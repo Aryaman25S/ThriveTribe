@@ -34,6 +34,19 @@ async def list_groups(db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
+@router.get("/{user_name}", response_model=list[GroupResponse])
+async def get_user_groups(user_name: str, db: AsyncSession = Depends(get_db)):
+    checkusr = await db.execute(
+        select(UserGroup).filter(UserGroup.user_name == user_name)
+    )
+    user = checkusr.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    result = await db.execute(select(Group).filter(Group.id == user.group_id))
+    return result.scalars().all()
+
+
 @router.delete("/delete-group/{group_id}", status_code=204)
 async def delete_group(group_id: int, db: AsyncSession = Depends(get_db)):
     group = await db.get(Group, group_id)

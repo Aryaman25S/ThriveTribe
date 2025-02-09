@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     firebase_uid = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
+    user_name = Column(String, unique=True, index=True)
     preferences = Column(
         JSON, default={"categories": []}
     )  # e.g., {"cleaning": 5, "cooking": 3}
