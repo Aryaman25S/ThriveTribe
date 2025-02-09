@@ -84,12 +84,8 @@ def create_user_groups():
         # Create associations (example: first user with first group)
         user_groups = [
             UserGroup(user_id=users[0].id, group_id=groups[0].id),
-            UserGroup(user_id=users[0].id, group_id=groups[1].id),
-            UserGroup(user_id=users[0].id, group_id=groups[2].id),
             UserGroup(user_id=users[1].id, group_id=groups[0].id),
-            UserGroup(user_id=users[1].id, group_id=groups[1].id),
-            UserGroup(user_id=users[2].id, group_id=groups[1].id),
-            UserGroup(user_id=users[2].id, group_id=groups[2].id),
+            UserGroup(user_id=users[2].id, group_id=groups[0].id),
         ]
         session.add_all(user_groups)
         session.commit()
