@@ -35,7 +35,7 @@ const SleepTracker = ({ sleepHours, goalHours }: SleepTrackerProps) => {
             cx={radius + strokeWidth}
             cy={radius + strokeWidth}
             r={radius}
-            stroke="#6A5ACD"
+            stroke="#4A4A6A"
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}
@@ -47,7 +47,7 @@ const SleepTracker = ({ sleepHours, goalHours }: SleepTrackerProps) => {
         <Text style={styles.sleepText}>{`${sleepHours} / ${goalHours} hrs`}</Text>
       </View>
       <View style={styles.infoContainer}>
-        <Ionicons name="moon" size={24} color="#6A5ACD" />
+        <Ionicons name="moon" size={24} color="#4A4A6A" />
         <Text style={styles.infoText}>Maintain a healthy sleep schedule for better well-being.</Text>
       </View>
     </View>
