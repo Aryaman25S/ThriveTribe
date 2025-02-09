@@ -10,7 +10,7 @@ interface Reward {
 }
 
 const RewardsScreen = () => {
-  const [totalPoints, setTotalPoints] = useState(125);
+  const [totalPoints, setTotalPoints] = useState(500);
   const [rewards, setRewards] = useState<Reward[]>([
     { id: 1, name: "10% Discount Code", pointsRequired: 100, revealed: false },
     { id: 2, name: "Free Coffee ☕", pointsRequired: 150, revealed: false },
