@@ -4,9 +4,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.user import User
 from app.schemas import UserResponse, UserUpdate, UserCreate, UserLogin
-from app.utils.auth import get_user_by_email, get_user_by_user_name, create_user_auth, verify_password, create_access_token
+from app.utils.auth import (
+    get_user_by_email,
+    get_user_by_user_name,
+    create_user_auth,
+    verify_password,
+    create_access_token,
+)
 
 router = APIRouter()
+
 
 @router.post("/signup")
 async def signup(user: UserCreate, db: AsyncSession = Depends(get_db)):
@@ -17,14 +24,14 @@ async def signup(user: UserCreate, db: AsyncSession = Depends(get_db)):
             status_code=400,
             detail="Email already registered",
         )
-    
+
     db_user_by_username = await get_user_by_user_name(db, user.user_name)
     if db_user_by_username:
         raise HTTPException(
             status_code=400,
             detail="Username already taken",
         )
-    
+
     # Create and save the new user in the database
     new_user = await create_user_auth(
         db,
@@ -34,8 +41,9 @@ async def signup(user: UserCreate, db: AsyncSession = Depends(get_db)):
         password=user.password,
         preferences={},
     )
-    
+
     return {"msg": "User created successfully", "email": new_user.email}
+
 
 @router.post("/login")
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
@@ -48,6 +56,7 @@ async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
     # Create access token
     access_token = create_access_token(data={"sub": user.user_name})
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @router.post("/", response_model=UserResponse)
 async def create_user(user_data: UserUpdate, db: AsyncSession = Depends(get_db)):
@@ -105,3 +114,11 @@ async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(user)
     await db.commit()
     return {"message": "User deleted"}
+
+
+@router.get("/{user_name}/points")
+async def get_user_points(user_name: str, db: AsyncSession = Depends(get_db)):
+    user = await get_user_by_user_name(db, user_name)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"username": user_name, "points": user.points}
