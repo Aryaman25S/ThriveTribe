@@ -122,3 +122,31 @@ async def get_user_points(user_name: str, db: AsyncSession = Depends(get_db)):
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return {"username": user_name, "points": user.points}
+
+
+@router.get("/{user_name}/rewards")
+async def get_user_rewards(user_name: str, db: AsyncSession = Depends(get_db)):
+    user = await get_user_by_user_name(db, user_name)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    rewards = [
+        {"id": 1, "name": "Free coffee", "pointsRequired": 100, "revealed": False},
+        {"id": 2, "name": "Free lunch", "pointsRequired": 200, "revealed": False},
+        {"id": 3, "name": "Free dinner", "pointsRequired": 300, "revealed": False},
+        {
+            "id": 4,
+            "name": "Free movie ticket",
+            "pointsRequired": 400,
+            "revealed": False,
+        },
+        {"id": 5, "name": "Free spa", "pointsRequired": 500, "revealed": False},
+        {
+            "id": 6,
+            "name": "Free gym membership",
+            "pointsRequired": 600,
+            "revealed": False,
+        },
+    ]
+
+    return {"username": user_name, "rewards": rewards}
