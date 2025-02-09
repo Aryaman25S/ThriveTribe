@@ -10,7 +10,7 @@ from app.models.reward import Reward
 from app.database import Base
 
 # Replace with your actual database URL
-DATABASE_URL = "postgresql://postgres:gP719@localhost/thrive-tribe"
+DATABASE_URL = "postgresql://myuser:password@localhost/postgres"
 
 # Create a synchronous engine
 engine = create_engine(DATABASE_URL, echo=True)
