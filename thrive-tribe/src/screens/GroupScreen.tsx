@@ -83,8 +83,8 @@ const GroupScreen = () => {
                 <Text style={styles.avatar}>👤</Text>
                 <View style={styles.memberDetails}>
                   <Text style={styles.memberName}>{member.user_name}</Text>
-                  <Text style={styles.memberStats}>🏆 {member.daily_incomplete_tasks} Tasks Completed</Text>
-                  <Text>Status: {member.status ? "✅ Done" : "❌ Pending"}</Text>
+                  <Text style={styles.memberStats}>🏆 {1 - member.daily_incomplete_tasks} Tasks Completed</Text>
+                  <Text>Status: {member.daily_incomplete_tasks == 0 ? "✅ Done" : "❌ Pending"}</Text>
                 </View>
                 {!member.status && (
                   <TouchableOpacity style={styles.remindButton}>
