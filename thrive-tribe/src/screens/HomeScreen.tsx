@@ -326,7 +326,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FitnessStats from '../components/FitnessStatsCard'; 
 import SleepTracker from '../components/SleepTrackerCard';
-import useHealthData from "@/src/hooks/useHealthData";
+import useHealthData from "../hooks/useHealthData";
 
 const HomeScreen = () => {
 
@@ -495,4 +495,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-
