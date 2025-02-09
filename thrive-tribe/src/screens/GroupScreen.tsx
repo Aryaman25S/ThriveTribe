@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useCallback} from "react";
 import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Card, Avatar, ProgressBar, Badge } from "react-native-paper";
-import { fetchGroupDetails } from "../api/api"; // Import API call
+import { fetchGroupDetails } from "../api/api";
+import {useFocusEffect} from "@react-navigation/native"; // Import API call
 
 interface GroupMember {
   user_name: string;
@@ -17,28 +18,28 @@ const GroupScreen = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch group details from API
-  useEffect(() => {
-    const loadGroupData = async () => {
-      setLoading(true);
-      const data = await fetchGroupDetails(groupName);
-      console.log(data)
-      if (data) {
-        setGroupMembers(data.members);
-        setStreak(data.streak);
-      }
-      setLoading(false);
-    };
+  useFocusEffect(useCallback(() => {
+      const loadGroupData = async () => {
+          setLoading(true);
+          const data = await fetchGroupDetails(groupName);
+          console.log(data)
+          if (data) {
+              setGroupMembers(data.members);
+              setStreak(data.streak);
+          }
+          setLoading(false);
+      };
 
-    loadGroupData();
-  }, []);
+      loadGroupData();
+  }, []));
 
   // Calculate group progress
-  const completedCount = Array.isArray(groupMembers) 
+  const completedCount = Array.isArray(groupMembers)
   ? groupMembers.filter(member => member.daily_incomplete_tasks == 0).length
   : 0;
 
-  const totalMembers = Array.isArray(groupMembers) 
-  ? groupMembers.length 
+  const totalMembers = Array.isArray(groupMembers)
+  ? groupMembers.length
   : 0;
   const completionPercentage = totalMembers > 0 ? completedCount / totalMembers : 0;
 
