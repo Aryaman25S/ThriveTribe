@@ -15,3 +15,4 @@ class User(Base):
         JSON, default={"categories": []}
     )  # e.g., {"cleaning": 5, "cooking": 3}
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    streak = Column(Integer, default=0)

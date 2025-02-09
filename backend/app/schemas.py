@@ -1,6 +1,7 @@
 # app/schemas.py
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List
 from app.models.task import TaskStatus
 
 
@@ -27,6 +28,17 @@ class UserUpdate(BaseModel):
     preferences: dict | None = None
 
 
+class UserBrief(BaseModel):
+    id: int
+    user_name: str
+    email: str
+    streak: int
+    daily_incomplete_tasks: int
+
+    class Config:
+        from_attributes = True
+
+
 class GroupCreate(BaseModel):
     name: str
 
@@ -37,6 +49,15 @@ class GroupResponse(GroupCreate):
     max_size: int
     created_by: int
     created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class GroupResponseDetail(BaseModel):
+    id: int
+    name: str
+    members: List[UserBrief]
 
     class Config:
         from_attributes = True
