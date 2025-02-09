@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Card, Avatar } from 'react-native-paper';
+import ConfettiCannon from 'react-native-confetti-cannon'; // 🎉 Import Confetti Effect
 
 interface Task {
   title: string;
   completed: boolean;
   proof: string | null;
-  dateCompleted?: string; // Store the date when task is completed
+  dateCompleted?: string;
 }
 
 const TaskScreen = () => {
@@ -19,11 +20,12 @@ const TaskScreen = () => {
 
   const [taskHistory, setTaskHistory] = useState<Task[]>([
     { title: "Drink 2L of Water 💧", completed: true, dateCompleted: "Feb 7, 2025", proof: null },
-    { title: "Stretch for 10 Minutes 🧘", completed: false, dateCompleted: "Feb 7, 2025", proof: null },
+    { title: "Stretch for 10 Minutes 🧘", completed: false, proof: null },
     { title: "Read for 15 minutes 📖", completed: true, dateCompleted: "Feb 6, 2025", proof: null },
   ]);
 
-  // Format date as "Month Day, Year" (e.g., "Feb 8, 2025")
+  const [showConfetti, setShowConfetti] = useState(false);
+
   const getFormattedDate = () => {
     const today = new Date();
     return today.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -31,15 +33,20 @@ const TaskScreen = () => {
 
   // Handle task completion
   const completeTask = () => {
+    setTask({ ...task, completed: true });
+
     const completedTask = {
       title: task.title,
       completed: true,
       proof: task.proof,
-      dateCompleted: getFormattedDate(), // Store current date
+      dateCompleted: getFormattedDate(),
     };
 
-    setTask({ ...task, completed: true });
-    setTaskHistory([completedTask, ...taskHistory]); // Add to history
+    setTaskHistory([completedTask, ...taskHistory]);
+
+    // 🎉 Trigger Confetti
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 10000);
   };
 
   // Handle image proof upload
@@ -56,7 +63,7 @@ const TaskScreen = () => {
     }
   };
 
-  // Undo Task Completion with Confirmation
+  // Undo Task Completion
   const undoTaskCompletion = () => {
     Alert.alert(
       "Undo Task Completion",
@@ -80,7 +87,7 @@ const TaskScreen = () => {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         
         {/* Task Section */}
-        <Card style={styles.card}>
+        <Card style={[styles.card, task.completed && styles.completedCard]}>
           <Card.Title title="Today's Task" left={(props) => <Avatar.Icon {...props} icon="clipboard-check" />} />
           <Card.Content>
             <Text style={styles.title}>{task.title}</Text>
@@ -120,6 +127,16 @@ const TaskScreen = () => {
         )}
 
       </ScrollView>
+
+      {/* 🎉 Confetti Animation */}
+      {showConfetti && (
+        <ConfettiCannon
+          count={200}
+          origin={{ x: 200, y: 0 }}
+          fadeOut={true}
+        />
+      )}
+      
     </View>
   );
 };
@@ -138,8 +155,11 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     borderRadius: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff", // Default white background
     elevation: 3,
+  },
+  completedCard: {
+    backgroundColor: "#c8e6c9", // ✅ Green background when task is completed
   },
   title: {
     fontSize: 20,
