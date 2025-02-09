@@ -18,3 +18,4 @@ class Task(Base):
     status = Column(String, default=TaskStatus.PENDING)
     assigned_to = Column(Integer, ForeignKey("users.id"))  # User ID
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    points = Column(Integer, default=1)

@@ -10,3 +10,4 @@ class StaticTask(Base):
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     category = Column(String, nullable=False)
+    points = Column(Integer, nullable=False, default=1)

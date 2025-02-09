@@ -12,9 +12,11 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     user_name: str
-    
+
+
 class UserLogin(UserBase):
     password: str
+
 
 class UserResponse(UserBase):
     id: int

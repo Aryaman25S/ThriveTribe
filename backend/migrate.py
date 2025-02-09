@@ -82,9 +82,24 @@ def create_user_groups():
 def insert_tasks():
     """Insert dummy tasks into the database."""
     tasks_data = [
-        {"title": "Task 1", "description": "Description for Task 1", "assigned_to": 1},
-        {"title": "Task 2", "description": "Description for Task 2", "assigned_to": 2},
-        {"title": "Task 3", "description": "Description for Task 3", "assigned_to": 3},
+        {
+            "title": "Task 1",
+            "description": "Description for Task 1",
+            "assigned_to": 1,
+            "points": 1,
+        },
+        {
+            "title": "Task 2",
+            "description": "Description for Task 2",
+            "assigned_to": 2,
+            "points": 1,
+        },
+        {
+            "title": "Task 3",
+            "description": "Description for Task 3",
+            "assigned_to": 3,
+            "points": 2,
+        },
     ]
     with Session() as session:
         tasks = [Task(**task_data) for task_data in tasks_data]
@@ -100,100 +115,119 @@ def insert_static_tasks():
             "title": "Walk 5,000+ Steps",
             "description": "Verified via phone pedometer or smartwatch.",
             "category": "Physical Activity",
+            "points": 2,
         },
         {
             "title": "Do a 2-Minute Plank",
             "description": "Use the phone's front camera to detect movement or upload a time-stamped video.",
             "category": "Physical Activity",
+            "points": 2,
         },
         {
             "title": "Complete a 15-Minute Workout",
             "description": "Verified via smartwatch.",
             "category": "Physical Activity",
+            "points": 3,
         },
         {
             "title": "Do 10 Flights of Stairs",
             "description": "Step count + elevation gain on fitness trackers.",
             "category": "Physical Activity",
+            "points": 2,
         },
         {
             "title": "Dance to 3 Songs in a Row",
             "description": "Use accelerometer data + music app confirmation.",
             "category": "Physical Activity",
+            "points": 2,
         },
         {
             "title": "Hold a Yoga Pose for 1 Minute",
             "description": "AI-powered pose detection via the camera.",
             "category": "Physical Activity",
+            "points": 2,
         },
         # Mental Wellness Tasks
         {
             "title": "Say 5 Positive Affirmations",
             "description": "Submit a voice note.",
             "category": "Mental Wellness",
+            "points": 1,
         },
         {
             "title": "Call or Video Chat a Friend for 5 Minutes",
             "description": "Ability to call friends through app.",
             "category": "Mental Wellness",
+            "points": 1,
         },
         {
             "title": "Try a New Deep Breathing Exercise",
             "description": "Record a guided breathing session from a supported app or use in-app capability.",
             "category": "Mental Wellness",
+            "points": 2,
         },
         # Lifestyle Tasks
         {
             "title": "Limit Social Media to 30 Minutes Today",
             "description": "Sync with screen time data.",
             "category": "Lifestyle",
+            "points": 1,
         },
         {
             "title": "Sleep 7+ Hours",
             "description": "Verified via wearable sleep tracker or phone screen-off time.",
             "category": "Lifestyle",
+            "points": 2,
         },
         {
             "title": "Draw/Paint something based on daily prompt",
             "description": "",
             "category": "Lifestyle",
+            "points": 2,
         },
         {
             "title": "Visit a local park/garden",
             "description": "",
             "category": "Lifestyle",
+            "points": 2,
         },
         # Movement-Based Tasks
         {
             "title": "Meet in the Middle",
             "description": "App finds the midpoint between group members (e.g., a park or café) for a meetup.",
             "category": "Movement-Based",
+            "points": 3,
         },
         {
             "title": "Step It Up",
             "description": "Each member must walk a minimum distance tracked via location updates. Group succeeds if everyone reaches the goal.",
             "category": "Movement-Based",
+            "points": 3,
         },
         {
             "title": "Roaming Relay",
             "description": "Each member is assigned a checkpoint; visit the spot and take a picture to complete the challenge.",
             "category": "Movement-Based",
+            "points": 3,
         },
         # Location-Based Exploration Tasks
         {
             "title": "Scavenger Hunt",
             "description": "Clues lead to landmarks or hidden locations. Tasks involve a selfie or scanning a QR code.",
             "category": "Location-Based",
+            "points": 3,
         },
         {
             "title": "Find a New Spot",
             "description": "Visit a new place (e.g., café, bookstore, or park) and share what you love about it.",
             "category": "Location-Based",
+            "points": 2,
         },
         {
             "title": "Photo Walk",
             "description": "Walk to a scenic spot and take a creative photo.",
             "category": "Location-Based",
+            "points": 2,
         },
     ]
     with Session() as session:
