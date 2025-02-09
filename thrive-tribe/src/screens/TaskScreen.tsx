@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Card, Avatar } from 'react-native-paper';
-import ConfettiCannon from 'react-native-confetti-cannon'; // 🎉 Import Confetti Effect
+import ConfettiCannon from 'react-native-confetti-cannon';
+import {fetchTaskList} from "@/src/api/api"; // 🎉 Import Confetti Effect
 
-interface Task {
+export interface Task {
   title: string;
   completed: boolean;
   proof: string | null;
@@ -26,9 +27,8 @@ const TaskScreen = () => {
 
   const [showConfetti, setShowConfetti] = useState(false);
 
-  const getFormattedDate = () => {
-    const today = new Date();
-    return today.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const getFormattedDate = (date = new Date()) => {
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   };
 
   // Handle task completion
@@ -81,6 +81,17 @@ const TaskScreen = () => {
       ]
     );
   };
+
+  useEffect(() => {
+    const loadTaskList = async () => {
+      const data = await fetchTaskList('charlie');
+      if (data) {
+        setTaskHistory(data);
+      }
+    };
+
+    loadTaskList();
+  }, []);
 
   return (
     <View style={styles.container}>
