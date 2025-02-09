@@ -10,7 +10,7 @@ from app.models.reward import Reward
 from app.database import Base
 
 # Replace with your actual database URL
-DATABASE_URL = "postgresql://myuser:password@localhost/postgres"
+DATABASE_URL = "postgresql://postgres:gP719@localhost/thrive-tribe"
 
 # Create a synchronous engine
 engine = create_engine(DATABASE_URL, echo=True)
@@ -32,9 +32,9 @@ def drop_tables():
 def insert_users():
     """Insert dummy users into the database."""
     users_data = [
-        {"user_name": "alice", "email": "alice@example.com"},
-        {"user_name": "bob", "email": "bob@example.com"},
-        {"user_name": "charlie", "email": "charlie@example.com"},
+        {"user_name": "alice", "email": "alice@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
+        {"user_name": "bob", "email": "bob@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
+        {"user_name": "charlie", "email": "charlie@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
     ]
     with Session() as session:
         users = [User(**user_data) for user_data in users_data]
