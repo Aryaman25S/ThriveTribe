@@ -6,7 +6,7 @@ import { fetchGroupDetails } from "../api/api"; // Import API call
 interface GroupMember {
   user_name: string;
   status: boolean;
-  totalCompletedTasks: number;
+  daily_incomplete_tasks: number;
 }
 
 const GroupScreen = () => {
@@ -34,7 +34,7 @@ const GroupScreen = () => {
 
   // Calculate group progress
   const completedCount = Array.isArray(groupMembers) 
-  ? groupMembers.filter(member => member.status).length 
+  ? groupMembers.filter(member => member.daily_incomplete_tasks == 0).length
   : 0;
 
   const totalMembers = Array.isArray(groupMembers) 
@@ -83,7 +83,7 @@ const GroupScreen = () => {
                 <Text style={styles.avatar}>👤</Text>
                 <View style={styles.memberDetails}>
                   <Text style={styles.memberName}>{member.user_name}</Text>
-                  <Text style={styles.memberStats}>🏆 {member.totalCompletedTasks} Tasks Completed</Text>
+                  <Text style={styles.memberStats}>🏆 {member.daily_incomplete_tasks} Tasks Completed</Text>
                   <Text>Status: {member.status ? "✅ Done" : "❌ Pending"}</Text>
                 </View>
                 {!member.status && (
