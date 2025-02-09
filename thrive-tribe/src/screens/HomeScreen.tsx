@@ -325,7 +325,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FitnessStats from '../components/FitnessStatsCard'; 
-import SleepTracker from '../components/SleepTrackerCard'; 
+import SleepTracker from '../components/SleepTrackerCard';
+import useHealthData from "@/src/hooks/useHealthData";
 
 const HomeScreen = () => {
 
@@ -335,6 +336,7 @@ const HomeScreen = () => {
     workoutMinutes: 40,
     bestDay: '10,200 steps on Jan 15', // Example best day
   };
+  const {steps, sleepDuration} = useHealthData();
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Header Section */}
@@ -364,7 +366,7 @@ const HomeScreen = () => {
           <View style={styles.activityCardSmall}>
             <Text style={styles.stepSmallText}>👣 Step Count</Text>
             <View style={styles.rowContainer}>
-              <Text style={styles.stepsNumber}>10,000</Text>
+              <Text style={styles.stepsNumber}>{steps}</Text>
               <Text style={styles.activitySmallLabel}>Steps</Text>
             </View>
           </View>
@@ -377,7 +379,7 @@ const HomeScreen = () => {
         bestDay={fitnessData.bestDay} 
       /> */}
       {/* Sleep Tracker Component */}
-      <SleepTracker sleepHours={6.5} goalHours={8} />
+      <SleepTracker sleepHours={sleepDuration} goalHours={8} />
     </ScrollView>
   );
 };
