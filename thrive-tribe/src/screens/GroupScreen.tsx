@@ -1,30 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Card, Avatar, ProgressBar, Badge } from "react-native-paper";
-import { fetchGroupDetails } from "../api/api";
+import { fetchGroupDetails } from "../api/api"; // Import API call
 
 interface GroupMember {
-  userName: string;
+  user_name: string;
   status: boolean;
-  totatCompletedTasks: number;
+  totalCompletedTasks: number;
 }
 
 const GroupScreen = () => {
-  const [isInGroup, setIsInGroup] = useState(false);
-  const [groupName, setGroupName] = useState<string | null>(null);
+  const [isInGroup, setIsInGroup] = useState(true); // Assume user is in a group
+  const [groupName, setGroupName] = useState("designer"); // Change to your actual group name
   const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
-  const [streak, setStreak] = useState<number>(0);
+  const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch group data from API
+  // Fetch group details from API
   useEffect(() => {
     const loadGroupData = async () => {
       setLoading(true);
-      const data = await fetchGroupDetails();
+      const data = await fetchGroupDetails(groupName);
+      console.log(data)
       if (data) {
-        setIsInGroup(true);
-        setGroupName(data.groupName);
-        setGroupMembers(data.users);
+        setGroupMembers(data.members);
         setStreak(data.streak);
       }
       setLoading(false);
@@ -33,17 +32,30 @@ const GroupScreen = () => {
     loadGroupData();
   }, []);
 
-  // Calculate completion status
-  const completedCount = groupMembers.filter((member) => member.status).length;
-  const totalMembers = groupMembers.length;
+  // Calculate group progress
+  const completedCount = Array.isArray(groupMembers) 
+  ? groupMembers.filter(member => member.status).length 
+  : 0;
+
+  const totalMembers = Array.isArray(groupMembers) 
+  ? groupMembers.length 
+  : 0;
   const completionPercentage = totalMembers > 0 ? completedCount / totalMembers : 0;
+
+  // **Turn progress card green when all members complete tasks**
   const allTasksCompleted = completedCount === totalMembers;
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#4CAF50" style={styles.loadingIndicator} />
-      ) : !isInGroup ? (
+      {!isInGroup ? (
         <View style={styles.noGroupContainer}>
           <Text style={styles.noGroupText}>You're not in a group yet.</Text>
           <TouchableOpacity style={styles.addGroupButton} onPress={() => setIsInGroup(true)}>
@@ -54,7 +66,7 @@ const GroupScreen = () => {
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Group Progress Section */}
           <Card style={[styles.card, allTasksCompleted && styles.completedCard]}>
-            <Card.Title title={`Group: ${groupName}`} left={(props) => <Avatar.Icon {...props} icon="account-group" />} />
+            <Card.Title title="Group Progress" left={(props) => <Avatar.Icon {...props} icon="account-group" />} />
             <Card.Content>
               <Text style={styles.progressText}>
                 {completedCount}/{totalMembers} members completed today's task ✅
@@ -65,13 +77,13 @@ const GroupScreen = () => {
 
           {/* Group Members List */}
           <Text style={styles.sectionTitle}>👥 Group Members</Text>
-          {groupMembers.map((member, index) => (
+          {groupMembers?.map((member, index) => (
             <Card key={index} style={styles.memberCard}>
               <Card.Content style={styles.memberContent}>
                 <Text style={styles.avatar}>👤</Text>
                 <View style={styles.memberDetails}>
-                  <Text style={styles.memberName}>{member.userName}</Text>
-                  <Text style={styles.memberStats}>🏆 {member.totatCompletedTasks} Tasks Completed</Text>
+                  <Text style={styles.memberName}>{member.user_name}</Text>
+                  <Text style={styles.memberStats}>🏆 {member.totalCompletedTasks} Tasks Completed</Text>
                   <Text>Status: {member.status ? "✅ Done" : "❌ Pending"}</Text>
                 </View>
                 {!member.status && (
@@ -87,8 +99,7 @@ const GroupScreen = () => {
           <Card style={styles.card}>
             <Card.Title title="🔥 Streaks & Leaderboard" left={(props) => <Avatar.Icon {...props} icon="fire" />} />
             <Card.Content>
-              <Text style={styles.streakText}>Your group has a {streak}-day streak! Keep it up! 🔥</Text>
-              <Badge style={styles.badge}>🏆 Streak Leader!</Badge>
+              <Text style={styles.streakText}>Your group has a **{streak}-day streak**! Keep it up! 🔥</Text>
             </Card.Content>
           </Card>
         </ScrollView>
@@ -103,7 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     paddingTop: 50,
   },
-  loadingIndicator: {
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -193,12 +204,6 @@ const styles = StyleSheet.create({
   streakText: {
     fontSize: 16,
     fontWeight: "bold",
-  },
-  badge: {
-    marginTop: 10,
-    alignSelf: "center",
-    fontSize: 16,
-    backgroundColor: "#FFD700",
   },
 });
 
