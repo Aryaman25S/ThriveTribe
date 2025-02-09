@@ -6,6 +6,7 @@ from app.models.group import Group
 from app.models.task import Task
 from app.models.user_group import UserGroup
 from app.models.static_task import StaticTask
+from app.models.reward import Reward
 from app.database import Base
 
 # Replace with your actual database URL
@@ -201,6 +202,116 @@ def insert_static_tasks():
         session.commit()
 
 
+def insert_rewards():
+    """Insert predefined rewards into the database."""
+    rewards_data = [
+        {
+            "name": "Amazon Gift Card",
+            "value": 25.00,
+            "description": "A $25 gift card for Amazon purchases.",
+        },
+        {
+            "name": "Coffee Shop Voucher",
+            "value": 10.00,
+            "description": "A $10 voucher for your favorite coffee shop.",
+        },
+        {
+            "name": "Fitness Tracker",
+            "value": 50.00,
+            "description": "A wearable device to monitor your fitness activities.",
+        },
+        {
+            "name": "Yoga Class Pass",
+            "value": 15.00,
+            "description": "A pass for a single yoga class at a local studio.",
+        },
+        {
+            "name": "Healthy Meal Kit",
+            "value": 30.00,
+            "description": "A kit with ingredients for a nutritious meal.",
+        },
+        {
+            "name": "Spa Treatment Voucher",
+            "value": 60.00,
+            "description": "A voucher for a relaxing spa treatment.",
+        },
+        {
+            "name": "Bookstore Gift Card",
+            "value": 20.00,
+            "description": "A $20 gift card for your favorite bookstore.",
+        },
+        {
+            "name": "Music Streaming Subscription",
+            "value": 9.99,
+            "description": "One-month subscription to a music streaming service.",
+        },
+        {
+            "name": "Online Course Access",
+            "value": 40.00,
+            "description": "Access to an online course of your choice.",
+        },
+        {
+            "name": "Meditation App Subscription",
+            "value": 12.00,
+            "description": "One-month subscription to a meditation app.",
+        },
+        {
+            "name": "Gym Membership",
+            "value": 50.00,
+            "description": "A one-month membership to a local gym.",
+        },
+        {
+            "name": "Public Transportation Pass",
+            "value": 25.00,
+            "description": "A pass for public transportation in your city.",
+        },
+        {
+            "name": "In-Office Massage",
+            "value": 45.00,
+            "description": "A voucher for a 30-minute in-office massage.",
+        },
+        {
+            "name": "Childcare Voucher",
+            "value": 100.00,
+            "description": "A voucher to assist with childcare expenses.",
+        },
+        {
+            "name": "Employee Discount",
+            "value": 20.00,
+            "description": "A discount on company products or services.",
+        },
+        {
+            "name": "Paid Time Off on Birthday",
+            "value": 0.00,
+            "description": "Enjoy a paid day off on your birthday.",
+        },
+        {
+            "name": "Event Tickets",
+            "value": 75.00,
+            "description": "Tickets to a concert, sports game, or theater show.",
+        },
+        {
+            "name": "Staycation Package",
+            "value": 150.00,
+            "description": "A package for a local getaway.",
+        },
+        {
+            "name": "Streaming Service Subscription",
+            "value": 15.00,
+            "description": "One-month subscription to a video streaming service.",
+        },
+        {
+            "name": "Home Office Upgrade",
+            "value": 100.00,
+            "description": "Funds to enhance your home office setup.",
+        },
+    ]
+    with Session() as session:
+        rewards = [Reward(**reward_data) for reward_data in rewards_data]
+        session.add_all(rewards)
+        session.commit()
+
+
 def migrate():
     """Run the migration steps sequentially."""
     drop_tables()
@@ -210,6 +321,7 @@ def migrate():
     create_user_groups()
     insert_tasks()
     insert_static_tasks()
+    insert_rewards()
 
 
 if __name__ == "__main__":
