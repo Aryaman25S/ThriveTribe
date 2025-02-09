@@ -1,7 +1,4 @@
 fastapi
 uvicorn
-<<<<<<< HEAD
 asyncpg
 shortuuid
-=======
->>>>>>> backend

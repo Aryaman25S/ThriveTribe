@@ -3,10 +3,51 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.user import User
-from app.schemas import UserResponse, UserUpdate
+from app.schemas import UserResponse, UserUpdate, UserCreate, UserLogin
+from app.utils.auth import get_user_by_email, get_user_by_user_name, create_user_auth, verify_password, create_access_token
 
 router = APIRouter()
 
+@router.post("/signup")
+async def signup(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    # Check if the email or user_name already exists in the database
+    db_user = await get_user_by_email(db, user.email)
+    if db_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered",
+        )
+    
+    db_user_by_username = await get_user_by_user_name(db, user.user_name)
+    if db_user_by_username:
+        raise HTTPException(
+            status_code=400,
+            detail="Username already taken",
+        )
+    
+    # Create and save the new user in the database
+    new_user = await create_user_auth(
+        db,
+        email=user.email,
+        user_name=user.user_name,
+        firebase_uid="",
+        password=user.password,
+        preferences={},
+    )
+    
+    return {"msg": "User created successfully", "email": new_user.email}
+
+@router.post("/login")
+async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
+    user = await get_user_by_email(db, data.email)
+    if user is None or not verify_password(data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password",
+        )
+    # Create access token
+    access_token = create_access_token(data={"sub": user.user_name})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/", response_model=UserResponse)
 async def create_user(user_data: UserUpdate, db: AsyncSession = Depends(get_db)):
