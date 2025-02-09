@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models.task import Task, TaskStatus
 from app.models.user import User
 from app.schemas import TaskCreate, TaskResponse, TaskUpdate
+from sqlalchemy import func
 from typing import List
 from datetime import datetime, timedelta
 import shortuuid
@@ -70,12 +71,27 @@ async def get_today_tasks(user_name: str, db: AsyncSession = Depends(get_db)):
     )
     # Get the first task
     task = result.scalar_one_or_none()
+
     if not task:
-        # Select a random task from the static_task table
-        result = await db.execute(select(Task).filter(Task.assigned_to == 0))
-        task = result.scalar_one_or_none()
-        if not task:
-            raise HTTPException(status_code=404, detail="No tasks found")
+        # Retrieve a random static task
+        result = await db.execute(select(StaticTask).order_by(func.random()).limit(1))
+        static_task = result.scalar_one_or_none()
+        if not static_task:
+            raise HTTPException(status_code=404, detail="No static tasks found")
+
+        # Optionally, you can convert the static task to a regular task
+        task = Task(
+            title=static_task.title,
+            description=static_task.description,
+            assigned_to=user.id,
+            created_at=now,
+            status=TaskStatus.PENDING,
+            points=static_task.points,
+        )
+        db.add(task)
+        await db.commit()
+        await db.refresh(task)
+
     return task
 
 
