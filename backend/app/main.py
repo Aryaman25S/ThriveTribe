@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import user, group, tasks
+from app.routers import user, group, tasks, rewards
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
@@ -11,6 +11,7 @@ app = FastAPI(title="ThriveTribe API")
 app.include_router(user.router, prefix="/users", tags=["users"])
 app.include_router(group.router, prefix="/groups", tags=["groups"])
 app.include_router(tasks.router, prefix="/tasks", tags=["tasks"])
+app.include_router(rewards.router, prefix="/rewards", tags=["rewards"])
 
 origins = [
     "http://localhost",

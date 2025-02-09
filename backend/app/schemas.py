@@ -91,3 +91,13 @@ class TaskUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     assigned_to: int | None = None
+
+
+class RewardResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    value: float
+
+    class Config:
+        from_attributes = True
