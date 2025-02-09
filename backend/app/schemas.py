@@ -1,6 +1,7 @@
 # app/schemas.py
 from pydantic import BaseModel
 from datetime import datetime
+from app.models.task import TaskStatus
 
 
 class UserBase(BaseModel):
@@ -39,3 +40,21 @@ class GroupResponse(GroupCreate):
 
     class Config:
         from_attributes = True  # Allows ORM mode for SQLAlchemy
+
+
+class TaskCreate(BaseModel):
+    title: str
+    description: str
+    assigned_to_usrname: str
+
+
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    status: TaskStatus.PENDING
+    assigned_to: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
