@@ -58,3 +58,9 @@ class TaskResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TaskUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    assigned_to: int | None = None
