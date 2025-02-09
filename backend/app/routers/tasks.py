@@ -66,6 +66,7 @@ async def get_today_tasks(user_name: str, db: AsyncSession = Depends(get_db)):
         .filter(Task.assigned_to == user.id)
         .filter(Task.created_at >= start_of_day)
         .filter(Task.created_at <= end_of_day)
+        .filter(Task.status == TaskStatus.PENDING)
     )
     # Get the first task
     task = result.scalar_one_or_none()
