@@ -5,6 +5,7 @@ from app.models.user import User
 from app.models.group import Group
 from app.models.task import Task
 from app.models.user_group import UserGroup
+from app.models.static_task import StaticTask
 from app.database import Base
 
 # Replace with your actual database URL
@@ -90,6 +91,116 @@ def insert_tasks():
         session.commit()
 
 
+def insert_static_tasks():
+    """Insert predefined static tasks into the static_tasks table."""
+    static_tasks_data = [
+        # Physical Activity Tasks
+        {
+            "title": "Walk 5,000+ Steps",
+            "description": "Verified via phone pedometer or smartwatch.",
+            "category": "Physical Activity",
+        },
+        {
+            "title": "Do a 2-Minute Plank",
+            "description": "Use the phone's front camera to detect movement or upload a time-stamped video.",
+            "category": "Physical Activity",
+        },
+        {
+            "title": "Complete a 15-Minute Workout",
+            "description": "Verified via smartwatch.",
+            "category": "Physical Activity",
+        },
+        {
+            "title": "Do 10 Flights of Stairs",
+            "description": "Step count + elevation gain on fitness trackers.",
+            "category": "Physical Activity",
+        },
+        {
+            "title": "Dance to 3 Songs in a Row",
+            "description": "Use accelerometer data + music app confirmation.",
+            "category": "Physical Activity",
+        },
+        {
+            "title": "Hold a Yoga Pose for 1 Minute",
+            "description": "AI-powered pose detection via the camera.",
+            "category": "Physical Activity",
+        },
+        # Mental Wellness Tasks
+        {
+            "title": "Say 5 Positive Affirmations",
+            "description": "Submit a voice note.",
+            "category": "Mental Wellness",
+        },
+        {
+            "title": "Call or Video Chat a Friend for 5 Minutes",
+            "description": "Ability to call friends through app.",
+            "category": "Mental Wellness",
+        },
+        {
+            "title": "Try a New Deep Breathing Exercise",
+            "description": "Record a guided breathing session from a supported app or use in-app capability.",
+            "category": "Mental Wellness",
+        },
+        # Lifestyle Tasks
+        {
+            "title": "Limit Social Media to 30 Minutes Today",
+            "description": "Sync with screen time data.",
+            "category": "Lifestyle",
+        },
+        {
+            "title": "Sleep 7+ Hours",
+            "description": "Verified via wearable sleep tracker or phone screen-off time.",
+            "category": "Lifestyle",
+        },
+        {
+            "title": "Draw/Paint something based on daily prompt",
+            "description": "",
+            "category": "Lifestyle",
+        },
+        {
+            "title": "Visit a local park/garden",
+            "description": "",
+            "category": "Lifestyle",
+        },
+        # Movement-Based Tasks
+        {
+            "title": "Meet in the Middle",
+            "description": "App finds the midpoint between group members (e.g., a park or café) for a meetup.",
+            "category": "Movement-Based",
+        },
+        {
+            "title": "Step It Up",
+            "description": "Each member must walk a minimum distance tracked via location updates. Group succeeds if everyone reaches the goal.",
+            "category": "Movement-Based",
+        },
+        {
+            "title": "Roaming Relay",
+            "description": "Each member is assigned a checkpoint; visit the spot and take a picture to complete the challenge.",
+            "category": "Movement-Based",
+        },
+        # Location-Based Exploration Tasks
+        {
+            "title": "Scavenger Hunt",
+            "description": "Clues lead to landmarks or hidden locations. Tasks involve a selfie or scanning a QR code.",
+            "category": "Location-Based",
+        },
+        {
+            "title": "Find a New Spot",
+            "description": "Visit a new place (e.g., café, bookstore, or park) and share what you love about it.",
+            "category": "Location-Based",
+        },
+        {
+            "title": "Photo Walk",
+            "description": "Walk to a scenic spot and take a creative photo.",
+            "category": "Location-Based",
+        },
+    ]
+    with Session() as session:
+        static_tasks = [StaticTask(**task_data) for task_data in static_tasks_data]
+        session.add_all(static_tasks)
+        session.commit()
+
+
 def migrate():
     """Run the migration steps sequentially."""
     drop_tables()
@@ -98,6 +209,7 @@ def migrate():
     insert_groups()
     create_user_groups()
     insert_tasks()
+    insert_static_tasks()
 
 
 if __name__ == "__main__":
