@@ -15,3 +15,4 @@ class Group(Base):
     # but add -1 as a default value
     created_by = Column(Integer, default=-1)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    streak = Column(Integer, default=0)
