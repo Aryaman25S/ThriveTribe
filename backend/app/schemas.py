@@ -79,6 +79,7 @@ class TaskResponse(BaseModel):
     description: str
     assigned_to: int
     created_at: datetime
+    status: str
 
     class Config:
         from_attributes = True

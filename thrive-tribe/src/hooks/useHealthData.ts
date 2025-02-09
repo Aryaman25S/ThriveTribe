@@ -35,10 +35,9 @@ const useHealthData = () => {
     const [hasPermissions, setHasPermission] = useState(false);
 
     useEffect(() => {
-        if (Platform.OS !== 'ios') {
-            return;
-        }
-        if (!Device.isDevice) {//won't run on simulator
+        if (Platform.OS !== 'ios' || !Device.isDevice) {//won't run on simulator so set random values
+            setSleepDuration(Math.floor(Math.random() * 3) + 6);
+            setSteps(Math.floor(Math.random() * 15000) + 1);
             return;
         }
         AppleHealthKit.initHealthKit(permissions, (err) => {
