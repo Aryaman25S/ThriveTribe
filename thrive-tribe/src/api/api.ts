@@ -76,7 +76,7 @@ export const loginUser = async (email, password) => {
         const response = await api.post(`/users/login`, {email, password});
         return response.status;
     } catch (error) {
-        console.error("error setting task status to completed:", error);
+        console.error("error logging in", error);
         return 500;
     }
 };

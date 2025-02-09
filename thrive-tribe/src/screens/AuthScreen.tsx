@@ -28,10 +28,12 @@ const AuthScreen = () => {
   }, [isAuthenticated]);
 
   const onSubmit = async (data: LoginForm) => {
-    if (data.email === 'test@example.com' && data.password === 'password123') {
-      await loginUser(data.email, data.password);
-      dispatch(login(data.email));
-    } else {
+    try {
+      let status = await loginUser(data.email, data.password);
+      if (status !=200){
+        throw new Error();
+      }
+    } catch(e) {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
