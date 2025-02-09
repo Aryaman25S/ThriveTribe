@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.thrive-tribe",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "Read and understand health data",
+        "NSHealthUpdateUsageDescription": "Share health data with other apps."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +37,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "react-native-health"
     ],
     "experiments": {
       "typedRoutes": true
