@@ -6,7 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.task import Task, TaskStatus
 from app.models.user import User
+from app.models.user_group import UserGroup
+from app.models.group import Group
 from app.schemas import TaskCreate, TaskResponse, TaskUpdate
+from app.models.static_task import StaticTask
 from sqlalchemy import func
 from typing import List
 from datetime import datetime, timedelta
@@ -163,18 +166,73 @@ async def update_task(
     return task
 
 
-# Complete Task
-@router.patch("/complete/{task_id}", response_model=TaskResponse)
-async def complete_task(task_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Task).filter(Task.id == task_id))
+@router.patch("/complete/{user_name}", response_model=TaskResponse)
+async def complete_task(user_name: str, db: AsyncSession = Depends(get_db)):
+    # Retrieve the user by username
+    result = await db.execute(select(User).filter(User.user_name == user_name))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Retrieve the task assigned to the user for today
+    now = datetime.now()
+    start_of_day = datetime(now.year, now.month, now.day, 0, 0, 0)
+    end_of_day = start_of_day + timedelta(days=1)
+
+    result = await db.execute(
+        select(Task)
+        .filter(Task.assigned_to == user.id)
+        .filter(Task.created_at >= start_of_day)
+        .filter(Task.created_at < end_of_day)
+        .filter(Task.status != TaskStatus.COMPLETED)
+    )
     task = result.scalar_one_or_none()
 
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(
+            status_code=404, detail="No incomplete task found for today"
+        )
 
+    # Mark the task as completed
     task.status = TaskStatus.COMPLETED
     db.add(task)
     await db.commit()
     await db.refresh(task)
+
+    # Retrieve the group the user belongs to
+    result = await db.execute(
+        select(Group).join(UserGroup).filter(UserGroup.user_id == user.id)
+    )
+    group = result.scalar_one_or_none()
+
+    if not group:
+        raise HTTPException(status_code=404, detail="User is not part of any group")
+
+    # Get all members of the group
+    result = await db.execute(
+        select(User).join(UserGroup).filter(UserGroup.group_id == group.id)
+    )
+    members = result.scalars().all()
+
+    # Check if all members have completed their tasks for today
+    all_completed = True
+    for member in members:
+        result = await db.execute(
+            select(Task)
+            .filter(Task.assigned_to == member.id)
+            .filter(Task.created_at >= start_of_day)
+            .filter(Task.created_at < end_of_day)
+            .filter(Task.status != TaskStatus.COMPLETED)
+        )
+        incomplete_task = result.scalar_one_or_none()
+        if incomplete_task:
+            all_completed = False
+            break
+
+    if all_completed:
+        # Award points to the group
+        # Implement your logic to award points to the group here
+        pass
 
     return task
