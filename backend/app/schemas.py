@@ -57,6 +57,7 @@ class GroupResponse(GroupCreate):
 class GroupResponseDetail(BaseModel):
     id: int
     name: str
+    streak: int
     members: List[UserBrief]
 
     class Config:

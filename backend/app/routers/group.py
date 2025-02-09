@@ -83,6 +83,7 @@ async def get_group_detail(group_name: str, db: AsyncSession = Depends(get_db)):
         "id": group.id,
         "name": group.name,
         "members": members_with_status,
+        "streak": group.streak,
     }
     return group_data
 
