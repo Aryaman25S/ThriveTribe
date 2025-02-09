@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Card, Avatar } from 'react-native-paper';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import {fetchTaskList} from "@/src/api/api"; // 🎉 Import Confetti Effect
+import {fetchCurrentTask, fetchTaskList, setTaskStatusToComplete} from "@/src/api/api"; // 🎉 Import Confetti Effect
 
 export interface Task {
+  id: number;
   title: string;
   completed: boolean;
   proof: string | null;
@@ -13,11 +14,7 @@ export interface Task {
 }
 
 const TaskScreen = () => {
-  const [task, setTask] = useState<Task>({
-    title: "Take a 30-minute walk in nature 🌿",
-    completed: false,
-    proof: null,
-  });
+  const [task, setTask] = useState<Task>(null);
 
   const [taskHistory, setTaskHistory] = useState<Task[]>([]);
 
@@ -28,10 +25,12 @@ const TaskScreen = () => {
   };
 
   // Handle task completion
-  const completeTask = () => {
-    setTask({ ...task, completed: true });
+  const completeTask = async () => {
+    await setTaskStatusToComplete(task.id);
+    setTask({...task, completed: true});
 
     const completedTask = {
+      id: task.id,
       title: task.title,
       completed: true,
       proof: task.proof,
@@ -80,9 +79,11 @@ const TaskScreen = () => {
 
   useEffect(() => {
     const loadTaskList = async () => {
-      const data = await fetchTaskList('charlie');
-      if (data) {
-        setTaskHistory(data);
+      const taskList = await fetchTaskList('charlie');
+      const currentTask = await fetchCurrentTask('charlie');
+      if (taskList) {
+        setTaskHistory(taskList);
+        setTask(currentTask);
       }
     };
 
@@ -94,7 +95,7 @@ const TaskScreen = () => {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         
         {/* Task Section */}
-        <Card style={[styles.card, task.completed && styles.completedCard]}>
+        {task && <Card style={[styles.card, task.completed && styles.completedCard]}>
           <Card.Title title="Today's Task" left={(props) => <Avatar.Icon {...props} icon="clipboard-check" />} />
           <Card.Content>
             <Text style={styles.title}>{task.title}</Text>
@@ -104,15 +105,15 @@ const TaskScreen = () => {
 
           <Card.Actions>
             {!task.completed ? (
-              <>
-                <Button title="Complete Task" onPress={completeTask} />
-                <Button title="Upload Proof" onPress={pickImage} />
-              </>
+                <>
+                  <Button title="Complete Task" onPress={completeTask} />
+                  <Button title="Upload Proof" onPress={pickImage} />
+                </>
             ) : (
-              <Button title="Undo Completion" color="red" onPress={undoTaskCompletion} />
+                <Button title="Undo Completion" color="red" onPress={undoTaskCompletion} />
             )}
           </Card.Actions>
-        </Card>
+        </Card>}
 
         {/* Past Tasks Section */}
         <Text style={styles.sectionTitle}>📜 Past Tasks</Text>
