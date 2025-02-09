@@ -32,9 +32,21 @@ def drop_tables():
 def insert_users():
     """Insert dummy users into the database."""
     users_data = [
-        {"user_name": "alice", "email": "alice@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
-        {"user_name": "bob", "email": "bob@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
-        {"user_name": "charlie", "email": "charlie@example.com", "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca"},
+        {
+            "user_name": "alice",
+            "email": "alice@example.com",
+            "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca",
+        },
+        {
+            "user_name": "bob",
+            "email": "bob@example.com",
+            "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca",
+        },
+        {
+            "user_name": "charlie",
+            "email": "charlie@example.com",
+            "hashed_password": "$2b$12$39/I9ei72TVTe/hNldizY.lHzCYx.foeOeFswBjXvTXDCe.iYSMca",
+        },
     ]
     with Session() as session:
         users = [User(**user_data) for user_data in users_data]
@@ -72,7 +84,11 @@ def create_user_groups():
         # Create associations (example: first user with first group)
         user_groups = [
             UserGroup(user_id=users[0].id, group_id=groups[0].id),
+            UserGroup(user_id=users[0].id, group_id=groups[1].id),
+            UserGroup(user_id=users[0].id, group_id=groups[2].id),
+            UserGroup(user_id=users[1].id, group_id=groups[0].id),
             UserGroup(user_id=users[1].id, group_id=groups[1].id),
+            UserGroup(user_id=users[2].id, group_id=groups[1].id),
             UserGroup(user_id=users[2].id, group_id=groups[2].id),
         ]
         session.add_all(user_groups)
