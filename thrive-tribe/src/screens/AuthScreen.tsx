@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { login } from '../store/slices/authSlice';
 import { useNavigation } from '@react-navigation/native';
+import {loginUser} from "@/src/api/api";
 
 type LoginForm = {
   email: string;
@@ -26,8 +27,9 @@ const AuthScreen = () => {
     }
   }, [isAuthenticated]);
 
-  const onSubmit = (data: LoginForm) => {
+  const onSubmit = async (data: LoginForm) => {
     if (data.email === 'test@example.com' && data.password === 'password123') {
+      await loginUser(data.email, data.password);
       dispatch(login(data.email));
     } else {
       Alert.alert('Login Failed', 'Invalid email or password');

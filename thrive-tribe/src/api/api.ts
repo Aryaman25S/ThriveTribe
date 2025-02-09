@@ -71,4 +71,14 @@ export const setTaskStatusToComplete = async (taskId: number) => {
     }
 };
 
+export const loginUser = async (email, password) => {
+    try {
+        const response = await api.post(`/users/login`, {email, password});
+        return response.status;
+    } catch (error) {
+        console.error("error setting task status to completed:", error);
+        return 500;
+    }
+};
+
 export default api;
