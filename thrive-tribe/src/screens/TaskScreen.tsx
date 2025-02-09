@@ -19,11 +19,7 @@ const TaskScreen = () => {
     proof: null,
   });
 
-  const [taskHistory, setTaskHistory] = useState<Task[]>([
-    { title: "Drink 2L of Water 💧", completed: true, dateCompleted: "Feb 7, 2025", proof: null },
-    { title: "Stretch for 10 Minutes 🧘", completed: false, proof: null },
-    { title: "Read for 15 minutes 📖", completed: true, dateCompleted: "Feb 6, 2025", proof: null },
-  ]);
+  const [taskHistory, setTaskHistory] = useState<Task[]>([]);
 
   const [showConfetti, setShowConfetti] = useState(false);
 
