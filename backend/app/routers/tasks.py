@@ -4,11 +4,10 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
-from app.models.task import Task
+from app.models.task import Task, TaskStatus
 from app.models.user import User
 from app.schemas import TaskCreate, TaskResponse, TaskUpdate
 from typing import List
-from app.models.task import TaskStatus
 import shortuuid
 
 router = APIRouter()
@@ -83,6 +82,23 @@ async def update_task(
             raise HTTPException(status_code=404, detail="User not found")
         task.assigned_to = user.id
 
+    db.add(task)
+    await db.commit()
+    await db.refresh(task)
+
+    return task
+
+
+# Complete Task
+@router.patch("/complete/{task_id}", response_model=TaskResponse)
+async def complete_task(task_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Task).filter(Task.id == task_id))
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task.status = TaskStatus.COMPLETED
     db.add(task)
     await db.commit()
     await db.refresh(task)

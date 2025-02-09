@@ -52,7 +52,6 @@ class TaskResponse(BaseModel):
     id: int
     title: str
     description: str
-    status: TaskStatus.PENDING
     assigned_to: int
     created_at: datetime
 
