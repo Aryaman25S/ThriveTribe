@@ -58,25 +58,6 @@ const TaskScreen = () => {
     }
   };
 
-  // Undo Task Completion
-  const undoTaskCompletion = () => {
-    Alert.alert(
-      "Undo Task Completion",
-      "Are you sure you want to reset this task?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Yes, Reset Task",
-          onPress: () => setTask({ ...task, completed: false, proof: null }),
-          style: "destructive",
-        },
-      ]
-    );
-  };
-
   useEffect(() => {
     const loadTaskList = async () => {
       const taskList = await fetchTaskList('charlie');
@@ -104,13 +85,11 @@ const TaskScreen = () => {
           </Card.Content>
 
           <Card.Actions>
-            {!task.completed ? (
+            {!task.completed && (
                 <>
                   <Button title="Complete Task" onPress={completeTask} />
                   <Button title="Upload Proof" onPress={pickImage} />
                 </>
-            ) : (
-                <Button title="Undo Completion" color="red" onPress={undoTaskCompletion} />
             )}
           </Card.Actions>
         </Card>}
