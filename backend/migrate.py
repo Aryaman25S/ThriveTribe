@@ -83,9 +83,9 @@ def create_user_groups():
 
         # Create associations (example: first user with first group)
         user_groups = [
-            UserGroup(user_id=users[0].id, group_id=groups[0].id),
-            UserGroup(user_id=users[1].id, group_id=groups[0].id),
-            UserGroup(user_id=users[2].id, group_id=groups[0].id),
+            UserGroup(user_id=users[0].id, group_id=groups[2].id),
+            UserGroup(user_id=users[1].id, group_id=groups[2].id),
+            UserGroup(user_id=users[2].id, group_id=groups[2].id),
         ]
         session.add_all(user_groups)
         session.commit()
@@ -97,18 +97,21 @@ def insert_tasks():
         {
             "title": "Task 1",
             "description": "Description for Task 1",
+            "status": "completed",
             "assigned_to": 1,
             "points": 1,
         },
         {
             "title": "Task 2",
             "description": "Description for Task 2",
+            "status": "completed",
             "assigned_to": 2,
             "points": 1,
         },
         {
             "title": "Task 3",
             "description": "Description for Task 3",
+            "status": "pending",
             "assigned_to": 3,
             "points": 2,
         },
